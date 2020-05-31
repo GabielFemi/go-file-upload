@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 )
 
 func uploadFile(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +28,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("MIME header: %+v\n", handler.Header)
 		// 3. write temporary file
 
-		tempFile, err := ioutil.TempFile("temp-images", "wallpaper-*.*")
+		tempFile, err := ioutil.TempFile("temp-images", "upload-*.jpg")
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -40,7 +41,12 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 		}
 
 		tempFile.Write(fileBytes)
-
+		path, err := os.Getwd()
+		fullPath := path + "\temp-images"
+		if err != nil {
+			log.Fatalln(err)
+		}
+		fmt.Println(fullPath)
 		_, _ = fmt.Fprintf(w, "Successfully uploaded file!")
 	} else {
 		render (w, "index.html", r)
